@@ -1,0 +1,9 @@
+{
+  "name": "Brightspace Agenda",
+  "domain": "brightspace_agenda",
+  "documentation": "https://github.com/MrTh0m/brightspace-agenda-hacs",
+  "issue_tracker": "https://github.com/MrTh0m/brightspace-agenda-hacs/issues",
+  "codeowners": ["@MrTh0m"],
+  "render_readme": true,
+  "homeassistant": "2024.1.0"
+}
