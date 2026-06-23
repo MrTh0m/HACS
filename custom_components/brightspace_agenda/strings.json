@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configurer Brightspace Agenda",
+        "description": "Renseigne l'URL de ton instance (api.php) et le token de partage. [Documentation]({doc_url})",
+        "data": {
+          "api_url": "URL de l'API (ex: https://ton-nas/api.php)",
+          "token":   "Token de partage",
+          "title":   "Nom affiché dans HA"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect":      "Impossible de joindre l'API — vérifie l'URL et le réseau.",
+      "invalid_token":       "Token invalide ou share désactivé dans l'app.",
+      "unexpected_response": "Réponse inattendue de l'API — vérifie la version de l'app."
+    },
+    "abort": {
+      "already_configured": "Cette instance est déjà configurée."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "limit":         "Nombre d'événements (1–20)",
+          "days":          "Horizon en jours (1–60)",
+          "scan_interval": "Intervalle de polling en secondes"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "domain": "brightspace_agenda",
+  "name": "Brightspace Agenda",
+  "version": "1.0.0",
+  "config_flow": true,
+  "documentation": "https://github.com/MrTh0m/brightspace-agenda-hacs",
+  "issue_tracker": "https://github.com/MrTh0m/brightspace-agenda-hacs/issues",
+  "codeowners": ["@MrTh0m"],
+  "requirements": [],
+  "iot_class": "cloud_polling"
+}
