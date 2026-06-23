@@ -6,10 +6,14 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, PLATFORMS
 from .coordinator import BrightspaceCoordinator
+from .frontend import async_register as async_register_frontend
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Initialise l'entrée de configuration."""
+    # Enregistre le JS Lovelace dès le premier setup
+    await async_register_frontend(hass)
+
     coordinator = BrightspaceCoordinator(hass, entry)
     await coordinator.async_config_entry_first_refresh()
 
