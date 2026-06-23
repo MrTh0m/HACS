@@ -3,18 +3,21 @@
     "step": {
       "user": {
         "title": "Configurer Brightspace Agenda",
-        "description": "Renseigne l'URL de ton instance (api.php) et le token de partage. [Documentation]({doc_url})",
+        "description": "Colle l'URL de partage générée dans l'application (icône Partager > Copier le lien).",
         "data": {
-          "api_url": "URL de l'API (ex: https://ton-nas/api.php)",
-          "token":   "Token de partage",
-          "title":   "Nom affiché dans HA"
+          "share_url": "URL de partage",
+          "title":     "Nom affiché dans Home Assistant"
+        },
+        "data_description": {
+          "share_url": "Ex : https://votre-serveur/index.html?share=abc123..."
         }
       }
     },
     "error": {
-      "cannot_connect":      "Impossible de joindre l'API — vérifie l'URL et le réseau.",
-      "invalid_token":       "Token invalide ou share désactivé dans l'app.",
-      "unexpected_response": "Réponse inattendue de l'API — vérifie la version de l'app."
+      "cannot_connect":      "Impossible de joindre le serveur — vérifie l'URL et la connectivité réseau.",
+      "invalid_token":       "Token invalide ou partage désactivé dans l'application.",
+      "invalid_share_url":   "URL invalide — colle l'URL de partage complète depuis l'application.",
+      "unexpected_response": "Réponse inattendue du serveur — vérifie la version de l'application."
     },
     "abort": {
       "already_configured": "Cette instance est déjà configurée."

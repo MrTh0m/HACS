@@ -6,15 +6,17 @@ Affiche les prochains événements de [Brightspace Agenda](https://github.com/Mr
 
 - Home Assistant 2024.1+
 - [HACS](https://hacs.xyz/) installé
-- Brightspace Agenda déployé et le **share token** activé (Paramètres > Partage dans l'app)
+- Brightspace Agenda déployé avec le **partage activé** (icône Partager dans l'app > Copier le lien)
 
 ## Installation
 
 ### 1 — Ajouter le dépôt dans HACS
 
-HACS → Menu (⋮) → **Dépôts personnalisés** → coller l'URL du repo → catégorie **Intégration** → Ajouter.
+HACS → Menu (⋮) → **Dépôts personnalisés** → coller `https://github.com/MrTh0m/HACS` → catégorie **Intégration** → Ajouter.
 
 Puis : HACS → Intégrations → **Brightspace Agenda** → Télécharger → Redémarrer HA.
+
+La card Lovelace est copiée automatiquement dans `www/` lors de l'installation.
 
 ### 2 — Configurer l'intégration
 
@@ -22,28 +24,21 @@ Paramètres → Appareils & Services → **+ Ajouter une intégration** → rech
 
 | Champ | Exemple |
 |---|---|
-| URL de l'API | `https://ton-nas.home/api.php` |
-| Token de partage | `abc123def456...` (copié depuis l'app) |
+| URL de partage | `https://votre-serveur/index.html?share=abc123...` |
 | Nom affiché | `Brightspace Agenda` |
 
-L'intégration teste la connexion avant de valider.
+L'URL est celle générée par l'application (icône Partager > Copier le lien). L'intégration en extrait automatiquement l'adresse du serveur et le token.
 
-### 3 — Ajouter la card Lovelace
+### 3 — Ajouter la card au tableau de bord
 
-Tableaux de bord → **Ressources** → Ajouter :
+Éditer un dashboard → **+ Ajouter une carte** → chercher *Brightspace* dans les cartes personnalisées.
 
-```
-URL  : /hacsfiles/brightspace_agenda/brightspace-agenda-card.js
-Type : Module JavaScript
-```
-
-Puis dans ton dashboard, ajouter une carte **Manuelle** :
+Ou en YAML manuel :
 
 ```yaml
 type: custom:brightspace-agenda-card
-entity: sensor.brightspace_agenda
-title: Brightspace Agenda   # optionnel
-app_url: https://ton-nas.home/   # optionnel — lien "Ouvrir l'agenda"
+entity: sensor.brightspace_agenda_evenements_a_venir
+app_url: https://votre-serveur/    # optionnel — lien "Ouvrir l'agenda"
 ```
 
 ## Options
@@ -58,10 +53,12 @@ Paramètres → Appareils & Services → Brightspace Agenda → **Configurer** :
 
 ## Sensor exposé
 
+`sensor.brightspace_agenda_evenements_a_venir`
+
 | Attribut | Type | Description |
 |---|---|---|
 | `state` | int | Nombre d'événements à venir |
-| `events` | list | Liste des événements (voir ci-dessous) |
+| `events` | list | Liste des événements |
 | `generated_at` | ISO 8601 | Horodatage du dernier refresh |
 
 Structure d'un événement :
@@ -71,36 +68,36 @@ Structure d'un événement :
   "uid":        "abc123",
   "summary":    "Rendu stratégie digitale",
   "type":       "deadline",
-  "start_iso":  "2026-06-24T23:59:00+02:00",
-  "end_iso":    "2026-06-24T23:59:00+02:00",
-  "days_until": 1,
+  "start_iso":  "2026-06-25T23:59:00+02:00",
+  "end_iso":    "2026-06-25T23:59:00+02:00",
+  "days_until": 2,
   "subject":    "Marketing"
 }
 ```
 
-Types possibles : `deadline`, `session`, `workshop`, `event`.
+Types : `deadline`, `session`, `workshop`, `event`.
 
-## Automatisations
+## Automatisation exemple
 
-Exemple — notification HA si une deadline est dans moins de 2 jours :
+Notification si une deadline tombe dans moins de 2 jours :
 
 ```yaml
 alias: Alerte deadline Brightspace
 trigger:
   - platform: template
     value_template: >
-      {% set events = state_attr('sensor.brightspace_agenda', 'events') %}
+      {% set events = state_attr('sensor.brightspace_agenda_evenements_a_venir', 'events') %}
       {% if events %}
         {{ events | selectattr('type', 'eq', 'deadline')
                   | selectattr('days_until', 'le', 1)
                   | list | count > 0 }}
       {% endif %}
 action:
-  - service: notify.mobile_app_mon_telephone
+  - service: notify.mobile_app
     data:
-      title: "Deadline imminente"
+      title: "Deadline imminente — Brightspace"
       message: >
-        {% set ev = state_attr('sensor.brightspace_agenda', 'events')
+        {% set ev = state_attr('sensor.brightspace_agenda_evenements_a_venir', 'events')
                     | selectattr('type', 'eq', 'deadline')
                     | selectattr('days_until', 'le', 1)
                     | first %}

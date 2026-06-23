@@ -172,8 +172,16 @@ customElements.define("brightspace-agenda-card", BrightspaceAgendaCard);
 
 window.customCards = window.customCards ?? [];
 window.customCards.push({
-  type:        "brightspace-agenda-card",
-  name:        "Brightspace Agenda",
-  description: "Affiche les prochains événements Brightspace (deadlines, sessions, ateliers).",
-  preview:     true,
+  type:           "brightspace-agenda-card",
+  name:           "Brightspace Agenda",
+  description:    "Affiche les prochains événements Brightspace (deadlines, sessions, ateliers).",
+  preview:        true,
+  documentationURL: "https://github.com/MrTh0m/HACS",
 });
+
+// Annonce dans la console pour confirmation de chargement
+console.info(
+  "%c BRIGHTSPACE-AGENDA-CARD %c chargée ",
+  "background:#6366f1;color:#fff;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold",
+  "background:#1c1c1e;color:#a5b4fc;padding:2px 4px;border-radius:0 3px 3px 0"
+);

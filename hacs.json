@@ -1,11 +1,11 @@
 {
   "name": "Brightspace Agenda",
   "domain": "brightspace_agenda",
-  "documentation": "https://github.com/MrTh0m/HACS/brightspace_agenda",
+  "documentation": "https://github.com/MrTh0m/HACS",
   "issue_tracker": "https://github.com/MrTh0m/HACS/issues",
   "codeowners": ["@MrTh0m"],
   "render_readme": true,
-  "homeassistant": "2024.1.0"
+  "homeassistant": "2024.1.0",
   "frontend_cards": [
     {
       "filename": "brightspace-agenda-card.js",

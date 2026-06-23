@@ -7,5 +7,6 @@
   "issue_tracker": "https://github.com/MrTh0m/brightspace-agenda-hacs/issues",
   "codeowners": ["@MrTh0m"],
   "requirements": [],
-  "iot_class": "cloud_polling"
+  "iot_class": "cloud_polling",
+  "icon": "mdi:school"
 }
