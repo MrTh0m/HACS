@@ -48,6 +48,24 @@ function fmtTime(d) {
   return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
 
+// Reproduit cleanSessionTitle de l'app : retire le préfixe "2026_PGMC03_2026-03 "
+const SESSION_TITLE_RE = /^\d{4}_[A-Z0-9]+_\d{4}-\d{2}\s+(.+)$/i;
+function cleanTitle(summary, type) {
+  if (!summary) return "—";
+  if (type === "session") {
+    const m = summary.match(SESSION_TITLE_RE);
+    if (m) return m[1].trim();
+    return summary.replace(/live session\s*[:\-]?\s*/i, "")
+                  .replace(/cours distanciel\s*[:\-]?\s*/i, "").trim() || summary;
+  }
+  if (type === "deadline") {
+    return summary.replace(/^(assessment|co-construction)\s*[:\–\-]+\s*/i, "")
+                  .replace(/\s*à échéance\s*$/i, "")
+                  .replace(/\s*[–\-:]+\s*$/, "").trim() || summary;
+  }
+  return summary;
+}
+
 function badge(daysUntil, type) {
   if (type === "deadline") {
     if (daysUntil === 0) return "Aujourd'hui";
@@ -220,7 +238,7 @@ class BrightspaceAgendaCard extends HTMLElement {
     const chipLabel  = isSession ? "Prochaine live session" : "Prochain atelier";
 
     const { chipBadge, whenLabel } = nextEventTiming(next.start_iso, next.end_iso);
-    const title   = next.summary ?? "—";
+    const title   = cleanTitle(next.summary, next.type);
     const subject = next.subject ?? "";
 
     const joinBtn = appUrl
