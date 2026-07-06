@@ -205,6 +205,16 @@ const CARD_STYLES = `
   }
   .footer-link { color: var(--primary-color); cursor: pointer; }
   .footer-ts   { color: var(--secondary-text-color); }
+  .footer-refresh {
+    background: none; border: none; cursor: pointer; padding: 0;
+    color: var(--secondary-text-color); display: flex; align-items: center;
+    gap: 4px; font-size: 11px; transition: color .15s;
+  }
+  .footer-refresh:hover { color: var(--primary-color); }
+  .footer-refresh.spinning ha-icon {
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .error { padding: 12px 16px; font-size: 12px; color: var(--error-color); }
 `;
 
@@ -333,6 +343,22 @@ class BrightspaceAgendaCard extends HTMLElement {
                          { weekday: "short", day: "numeric", month: "short" });
     const ts = tsLabel(attrs.generated_at);
 
+    // Bouton refresh — appelle homeassistant.update_entity sur le sensor
+    const refreshBtn = card.querySelector("#refresh-btn");
+    if (refreshBtn) {
+      refreshBtn.addEventListener("click", async () => {
+        refreshBtn.classList.add("spinning");
+        try {
+          await this._hass.callService("homeassistant", "update_entity", {
+            entity_id: this._config.entity,
+          });
+        } finally {
+          // Retire le spin après 1.5s pour laisser le temps au sensor de se mettre à jour
+          setTimeout(() => refreshBtn.classList.remove("spinning"), 1500);
+        }
+      });
+    }
+
     // Le chip prochain événement n'a de sens que si show_events ou show_next activés
     const nextHtml = showNext ? this._nextBlock(events, appUrl) : "";
     // Séparer le chip des stats par une divider seulement si les deux sont affichés
@@ -350,13 +376,17 @@ class BrightspaceAgendaCard extends HTMLElement {
       ${needsDividerAfterNext ? `<div style="height:1px;background:var(--divider-color);margin-top:10px"></div>` : ""}
       ${showStats  ? this._statsBlock(attrs)   : ""}
       ${showEvents ? this._eventsBlock(events) : ""}
-      ${appUrl || ts ? `
       <div class="footer">
         ${appUrl
           ? `<span class="footer-link" onclick="window.open('${appUrl}','_blank')">Ouvrir l'agenda ↗</span>`
           : `<span></span>`}
-        <span class="footer-ts">${ts}</span>
-      </div>` : ""}`;
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="footer-ts">${ts}</span>
+          <button class="footer-refresh" id="refresh-btn" title="Actualiser">
+            <ha-icon icon="mdi:refresh" style="--mdi-icon-size:16px"></ha-icon>
+          </button>
+        </div>
+      </div>`;
   }
 
   static getConfigElement() {
