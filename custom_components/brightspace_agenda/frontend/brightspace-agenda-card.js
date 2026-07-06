@@ -586,7 +586,7 @@ window.customCards.push({
   name:             "Brightspace Agenda",
   description:      "Affiche le prochain événement, les métriques et l'agenda Brightspace.",
   preview:          true,
-  documentationURL: "https://github.com/MrTh0m/HACS",
+  documentationURL: "https://github.com/MrTh0m/Brightspace_agenda_HACS",
 });
 
 console.info(
