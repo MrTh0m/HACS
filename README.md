@@ -12,7 +12,7 @@ Affiche les prochains événements de [Brightspace Agenda](https://github.com/Mr
 
 ### 1 — Ajouter le dépôt dans HACS
 
-HACS → Menu (⋮) → **Dépôts personnalisés** → coller `https://github.com/MrTh0m/HACS` → catégorie **Intégration** → Ajouter.
+HACS → Menu (⋮) → **Dépôts personnalisés** → coller `https://github.com/MrTh0m/Brightspace_agenda_HACS` → catégorie **Intégration** → Ajouter.
 
 Puis : HACS → Intégrations → **Brightspace Agenda** → Télécharger → Redémarrer HA.
 
