@@ -13,10 +13,11 @@
 // ─── Métadonnées ─────────────────────────────────────────────────────────────
 
 const TYPE_META = {
-  deadline: { label: "Deadline", color: "#E24B4A", bg: "rgba(226,75,74,.12)" },
-  session:  { label: "Session",  color: "#378ADD", bg: "rgba(55,138,221,.12)" },
-  workshop: { label: "Atelier",  color: "#639922", bg: "rgba(99,153,34,.12)" },
-  event:    { label: "Événement",color: "#888780", bg: "rgba(136,135,128,.12)" },
+  // Couleurs alignées sur l'app (variables CSS de index.html)
+  deadline: { label: "Devoir",    color: "#6d28d9", bg: "rgba(109,40,217,.12)", icon: "mdi:file-document-outline" },
+  session:  { label: "Session",   color: "#0e7490", bg: "rgba(14,116,144,.12)", icon: "mdi:video" },
+  workshop: { label: "Atelier",   color: "#0d6e4f", bg: "rgba(13,110,79,.12)",  icon: "mdi:account-group" },
+  event:    { label: "Événement", color: "#888780", bg: "rgba(136,135,128,.12)",icon: "mdi:calendar" },
 };
 
 const STAT_META = {
@@ -188,14 +189,21 @@ const CARD_STYLES = `
     padding: 8px 16px; transition: background .15s;
   }
   .event-row:hover { background: var(--secondary-background-color); }
-  .dot { width: 3px; border-radius: 2px; align-self: stretch; min-height: 32px; flex-shrink: 0; }
+  .event-row.rendu { opacity: .55; }
+  .dot { width: 3px; border-radius: 2px; align-self: stretch; min-height: 36px; flex-shrink: 0; }
+  .event-icon { font-size: 16px; flex-shrink: 0; --mdi-icon-size: 18px; }
   .event-body { flex: 1; min-width: 0; }
   .event-name {
     font-size: 13px; color: var(--primary-text-color);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .event-sub  { font-size: 11px; color: var(--secondary-text-color); margin-top: 2px; }
+  .event-name.struck { text-decoration: line-through; opacity: .7; }
+  .event-sub  { font-size: 11px; color: var(--secondary-text-color); margin-top: 2px;
+                display: flex; align-items: center; gap: 6px; }
+  .event-code { font-size: 10px; font-weight: 700; font-family: monospace;
+                padding: 1px 5px; border-radius: 4px; letter-spacing: .4px; flex-shrink: 0; }
   .event-badge { font-size: 11px; padding: 2px 7px; border-radius: 12px; flex-shrink: 0; font-weight: 500; }
+  .rendu-mark { font-size: 10px; flex-shrink: 0; }
   .empty { padding: 20px 16px; font-size: 13px; color: var(--secondary-text-color); text-align: center; }
 
   /* Footer */
@@ -299,14 +307,30 @@ class BrightspaceAgendaCard extends HTMLElement {
 
   // ── Bloc events ──────────────────────────────────────────────────────────
   _eventsBlock(events) {
-    if (!events.length) return `<div class="empty">Aucun événement à venir</div>`;
-    return `<div class="event-list">${events.map(ev => {
-      const meta = TYPE_META[ev.type] ?? TYPE_META.event;
-      return `<div class="event-row">
+    // Filtrer les ignorés (masqués) côté card par sécurité
+    const visible = events.filter(ev => !ev.ignored);
+    if (!visible.length) return `<div class="empty">Aucun événement à venir</div>`;
+    return `<div class="event-list">${visible.map(ev => {
+      const meta    = TYPE_META[ev.type] ?? TYPE_META.event;
+      const isRendu = !!ev.rendu;
+      const title   = cleanTitle(ev.summary, ev.type);
+      const code    = ev.course_code ?? ev.subject ?? null;
+      const codeHtml = code
+        ? `<span class="event-code" style="background:${meta.bg};color:${meta.color}">${code}</span>`
+        : "";
+      const renduMark = isRendu
+        ? `<span class="rendu-mark" style="color:#0d6e4f">✓</span>`
+        : "";
+      return `<div class="event-row${isRendu ? " rendu" : ""}">
         <div class="dot" style="background:${meta.color}"></div>
+        <ha-icon class="event-icon" icon="${meta.icon}" style="color:${meta.color}"></ha-icon>
         <div class="event-body">
-          <div class="event-name">${ev.summary ?? ""}</div>
-          <div class="event-sub">${fmtDate(ev.start_iso)}</div>
+          <div class="event-name${isRendu ? " struck" : ""}">${title}</div>
+          <div class="event-sub">
+            <span>${fmtDate(ev.start_iso)}</span>
+            ${codeHtml}
+            ${renduMark}
+          </div>
         </div>
         <span class="event-badge" style="background:${meta.bg};color:${meta.color}">
           ${badge(ev.days_until ?? 0, ev.type)}
@@ -590,7 +614,7 @@ window.customCards.push({
 });
 
 console.info(
-  "%c BRIGHTSPACE-AGENDA-CARD %c v1.3 chargée ",
+  "%c BRIGHTSPACE-AGENDA-CARD %c v1.4 chargée ",
   "background:#6366f1;color:#fff;padding:2px 4px;border-radius:3px 0 0 3px;font-weight:bold",
   "background:#1c1c1e;color:#a5b4fc;padding:2px 4px;border-radius:0 3px 3px 0"
 );
