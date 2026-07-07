@@ -14,23 +14,24 @@ _LOGGER = logging.getLogger(__name__)
 URL_BASE  = "/brightspace-agenda"
 CARD_FILE = "brightspace-agenda-card.js"
 CARD_PATH = Path(__file__).parent / CARD_FILE
+MANIFEST  = Path(__file__).parent.parent / "manifest.json"
 
-# Lit la version depuis manifest.json pour le cache-busting automatique
-def _get_version() -> str:
-    try:
-        manifest = Path(__file__).parent.parent / "manifest.json"
-        return json.loads(manifest.read_text())["version"]
-    except Exception:
-        return "0"
 
-def _versioned_url() -> str:
-    return f"{URL_BASE}/{CARD_FILE}?v={_get_version()}"
+async def _async_get_version(hass: HomeAssistant) -> str:
+    """Lit la version depuis manifest.json de facon non bloquante (executor)."""
+    def _read() -> str:
+        try:
+            return json.loads(MANIFEST.read_text())["version"]
+        except Exception:
+            return "0"
+    return await hass.async_add_executor_job(_read)
 
 
 async def async_register(hass: HomeAssistant) -> None:
-    """Expose le fichier JS en statique et met à jour la ressource Lovelace si nécessaire."""
+    """Expose le JS en statique et met a jour la ressource Lovelace si necessaire."""
 
-    versioned_url = _versioned_url()
+    version       = await _async_get_version(hass)
+    versioned_url = f"{URL_BASE}/{CARD_FILE}?v={version}"
 
     # 1 — Chemin statique (cache_headers=False : HA ne met pas en cache côté serveur)
     await hass.http.async_register_static_paths(
