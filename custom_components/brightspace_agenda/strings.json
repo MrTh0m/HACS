@@ -1,6 +1,25 @@
 {
   "config": {
     "step": {
+      "addon_detected": {
+        "title": "Addon Brightspace Agenda détecté !",
+        "description": "L'addon Home Assistant Brightspace Agenda est en cours d'exécution sur ce serveur (port {port}, IP {ip}). Veux-tu l'enrôler automatiquement ?",
+        "data": {
+          "use_addon": "Utiliser l'addon détecté (recommandé)",
+          "title":     "Nom affiché dans Home Assistant"
+        }
+      },
+      "manual": {
+        "title": "Configuration manuelle",
+        "description": "Colle l'URL de partage générée dans l'application (icône Partager > Copier le lien).",
+        "data": {
+          "share_url": "URL de partage",
+          "title":     "Nom affiché dans Home Assistant"
+        },
+        "data_description": {
+          "share_url": "Ex : https://votre-serveur/index.html?share=abc123..."
+        }
+      },
       "user": {
         "title": "Configurer Brightspace Agenda",
         "description": "Colle l'URL de partage générée dans l'application (icône Partager > Copier le lien).",
